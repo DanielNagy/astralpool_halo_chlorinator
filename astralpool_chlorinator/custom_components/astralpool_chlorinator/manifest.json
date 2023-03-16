@@ -1,0 +1,17 @@
+{
+  "domain": "astralpool_chlorinator",
+  "name": "Astral Pool Viron eQuilibrium Chlorinator",
+  "bluetooth": [
+    {
+      "service_uuid": "45000001-98b7-4e29-a03f-160174643001"
+    }
+  ],
+  "codeowners": ["@pbutterworth"],
+  "config_flow": false,
+  "dependencies": ["bluetooth_adapters"],
+  "documentation": "https://www.home-assistant.io/integrations/astralpool_chlorinator/",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "requirements": ["bluetooth-data-tools==0.3.1", "bleak==0.19.5"],
+  "version": "0.0.1"
+}
