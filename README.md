@@ -30,7 +30,7 @@
 4. Download _all_ the files from the `custom_components/astralpool_chlorinator/` directory (folder) in this repository.
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
-7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Astral Pool Viron eQuilibrium Chlorinator"
+7. Wait paitently for your chlorinator to be discovered
 
 Using your HA configuration directory (folder) as a starting point you should now also have this:
 
