@@ -30,7 +30,7 @@
 4. Download _all_ the files from the `custom_components/astralpool_chlorinator/` directory (folder) in this repository.
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
-7. Wait paitently for your chlorinator to be discovered
+7. Wait paitently for your chlorinator to be discovered (should only be a few seconds once HA has started up)
 
 Using your HA configuration directory (folder) as a starting point you should now also have this:
 
@@ -55,10 +55,6 @@ custom_components/astralpool_chlorinator/switch.py
 ## Configuration is done in the UI
 
 <!---->
-
-## Contributions are welcome!
-
-If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
 
 ## Credits
 
