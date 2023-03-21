@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .viron_chlorinator.chlorinator import ChlorinatorAPI
+from pychlorinator.chlorinator import ChlorinatorAPI
 from .coordinator import ChlorinatorDataUpdateCoordinator
 
 
