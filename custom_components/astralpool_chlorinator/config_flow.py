@@ -95,7 +95,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     }
                 ),
                 vol.Required(
-                    CONF_ACCESS_TOKEN, description="CONF_ACCESS_TOKEN", default="H7PB"
+                    CONF_ACCESS_TOKEN, description="CONF_ACCESS_TOKEN"
                 ): str,
             }
         )
