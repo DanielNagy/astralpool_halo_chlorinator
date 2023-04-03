@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 from pychlorinator.chlorinator import ChlorinatorAPI
+from bleak_retry_connector import get_device
 
 from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
@@ -37,8 +38,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     address: str = entry.data[CONF_ADDRESS]
     accesscode: str = entry.data[CONF_ACCESS_TOKEN]
-    ble_device = bluetooth.async_ble_device_from_address(hass, address.upper(), True)
-
+    ble_device = bluetooth.async_ble_device_from_address(
+        hass, address.upper(), True
+    ) or await get_device(address)
     if not ble_device:
         raise ConfigEntryNotReady(
             f"Could not find chlorinator device with address {address}"
