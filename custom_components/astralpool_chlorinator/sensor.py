@@ -3,8 +3,6 @@ from __future__ import annotations
 
 import logging
 
-from .coordinator import ChlorinatorDataUpdateCoordinator
-
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
@@ -18,6 +16,8 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
 )
+
+from .coordinator import ChlorinatorDataUpdateCoordinator
 from .models import ChlorinatorData
 from .const import DOMAIN
 

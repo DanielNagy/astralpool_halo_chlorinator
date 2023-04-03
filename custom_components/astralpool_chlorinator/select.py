@@ -4,8 +4,7 @@ from __future__ import annotations
 import logging
 import asyncio
 
-from .coordinator import ChlorinatorDataUpdateCoordinator
-
+from pychlorinator import chlorinator_parsers
 from homeassistant.components.select import (
     SelectEntity,
 )
@@ -16,9 +15,10 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
 )
+
+from .coordinator import ChlorinatorDataUpdateCoordinator
 from .models import ChlorinatorData
 from .const import DOMAIN
-from pychlorinator import chlorinator_parsers
 
 
 _LOGGER = logging.getLogger(__name__)
