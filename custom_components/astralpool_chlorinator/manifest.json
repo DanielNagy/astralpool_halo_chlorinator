@@ -14,5 +14,5 @@
   "integration_type": "device",
   "iot_class": "local_polling",
   "requirements": ["bluetooth-data-tools==0.3.1", "pychlorinator>=0.2.3"],
-  "version": "0.1.8"
+  "version": "0.1.9"
 }
