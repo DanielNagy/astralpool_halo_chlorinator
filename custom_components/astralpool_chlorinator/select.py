@@ -31,11 +31,11 @@ async def async_setup_entry(
 ) -> None:
     """Set up Chlorinator from a config entry."""
     data: ChlorinatorData = hass.data[DOMAIN][entry.entry_id]
-    entities = [ChlorinatorSelect(data.coordinator)]
+    entities = [ChlorinatorModeSelect(data.coordinator), ChlorinatorSpeedSelect(data.coordinator)]
     async_add_entities(entities)
 
 
-class ChlorinatorSelect(
+class ChlorinatorModeSelect(
     CoordinatorEntity[ChlorinatorDataUpdateCoordinator], SelectEntity
 ):
     """Representation of a Clorinator Select entity."""
@@ -80,6 +80,60 @@ class ChlorinatorSelect(
             action = chlorinator_parsers.ChlorinatorActions.Auto
         elif option == "Manual":
             action = chlorinator_parsers.ChlorinatorActions.Manual
+        else:
+            action = chlorinator_parsers.ChlorinatorActions.NoAction
+
+        await self.coordinator.chlorinator.async_write_action(action)
+        await asyncio.sleep(2)
+        await self.coordinator.async_request_refresh()
+
+class ChlorinatorSpeedSelect(
+    CoordinatorEntity[ChlorinatorDataUpdateCoordinator], SelectEntity
+):
+    """Representation of a Clorinator Select entity."""
+
+    _attr_icon = "mdi:pump"
+    _attr_options = ["Low", "Medium", "High"]
+    _attr_name = "Pump Speed"
+    _attr_unique_id = "pool01_speed_select"
+
+    def __init__(
+        self,
+        coordinator: ChlorinatorDataUpdateCoordinator,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        return {
+            "identifiers": {(DOMAIN, "POOL01")},
+            "name": "POOL01",
+            "model": "Viron eQuilibrium",
+            "manufacturer": "Astral Pool",
+        }
+
+    @property
+    def current_option(self):
+        speed = self.coordinator.data.get("pump_speed")
+        if speed is chlorinator_parsers.SpeedLevels.Low:
+            return "Low"
+        elif speed is chlorinator_parsers.SpeedLevels.Medium:
+            return "Medium"
+        elif speed is chlorinator_parsers.SpeedLevels.AI:
+            return "AI"
+        else:
+            return "High"
+
+    async def async_select_option(self, option: str) -> None:
+        """Change the selected option"""
+        action: chlorinator_parsers.ChlorinatorActions.NoAction
+        if option == "Low":
+            action = chlorinator_parsers.ChlorinatorActions.Low
+        elif option == "Medium":
+            action = chlorinator_parsers.ChlorinatorActions.Medium
+        elif option == "High":
+            action = chlorinator_parsers.ChlorinatorActions.High
         else:
             action = chlorinator_parsers.ChlorinatorActions.NoAction
 
