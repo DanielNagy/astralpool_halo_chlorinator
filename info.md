@@ -7,6 +7,8 @@
 
 [![Community Forum][forum-shield]][forum]
 
+[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
+
 **This component will set up the following platforms.**
 
 | Platform        | Description                                                               |
@@ -50,3 +52,5 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [releases-shield]: https://img.shields.io/github/release/pbutterworth/astralpool_chlorinator.svg?style=for-the-badge
 [releases]: https://github.com/pbutterworth/astralpool_chlorinator/releases
 [user_profile]: https://github.com/pbutterworth
+[buymecoffee]: https://www.buymeacoffee.com/pbutterworQ
+[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
