@@ -6,13 +6,20 @@
       "service_uuid": "45000001-98b7-4e29-a03f-160174643001"
     }
   ],
-  "codeowners": ["@pbutterworth"],
+  "codeowners": [
+    "@pbutterworth"
+  ],
   "config_flow": false,
-  "dependencies": ["bluetooth_adapters"],
+  "dependencies": [
+    "bluetooth_adapters"
+  ],
   "documentation": "https://github.com/pbutterworth/astrapool_chlorinator",
   "issue_tracker": "https://github.com/pbutterworth/astrapool_chlorinator/issues",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "requirements": ["bluetooth-data-tools==0.4.0", "pychlorinator>=0.2.3"],
+  "requirements": [
+    "bluetooth-data-tools>=0.4.0",
+    "pychlorinator>=0.2.3"
+  ],
   "version": "0.1.11"
 }
