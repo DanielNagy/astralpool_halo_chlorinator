@@ -1,4 +1,4 @@
-# Astral Pool Viron eQuilibrium Chlorinator
+# Astral Pool Halo Chlorinator
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
@@ -14,7 +14,7 @@
 
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
-Please also support https://github.com/pbutterworth/astralpool_chlorinator
+Please also support https://github.com/pbutterworth/astralpool_chlorinator for his initial work with the Astral Viron EQ Chlorinator.
 
 \*\*This component will set up the following platforms.\*\*
 
@@ -86,5 +86,4 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [releases]: https://github.com/DanielNagy/astralpool_halo_chlorinator/releases
 [user_profile]: https://github.com/DanielNagy
 [buymecoffee]: https://www.buymeacoffee.com/danielnagy
-[buymecoffeepbutterworth]: https://www.buymeacoffee.com/pbutterworQ
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
