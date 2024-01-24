@@ -3,24 +3,21 @@ from __future__ import annotations
 
 import logging
 
+from homeassistant import config_entries
 from homeassistant.components.sensor import (
+    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
-    SensorDeviceClass,
 )
-from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-)
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .const import DOMAIN
 from .coordinator import ChlorinatorDataUpdateCoordinator
 from .models import ChlorinatorData
-from .const import DOMAIN
-
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -81,6 +78,14 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
     ),
+    "ORPMeasurement": SensorEntityDescription(
+        key="ORPMeasurement",
+        icon="mdi:beaker-check-outline",
+        name="ORP Measurement",
+        native_unit_of_measurement=None,
+        device_class=None,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
     "ph_control_type": SensorEntityDescription(
         key="ph_control_type",
         icon="mdi:ph",
@@ -96,6 +101,54 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         native_unit_of_measurement=None,
         device_class=SensorDeviceClass.ENUM,
         state_class=None,
+    ),
+    "PoolLeftFilter": SensorEntityDescription(
+        key="PoolLeftFilter",
+        icon="mdi:chart-line",
+        name="Litres left to Filter",
+        native_unit_of_measurement="L",
+        device_class=None,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "DosingPumpSecs": SensorEntityDescription(
+        key="DosingPumpSecs",
+        icon="mdi:chart-line",
+        name="Dosing Pump today (ml)",
+        native_unit_of_measurement="mL",
+        device_class=None,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "WaterTemp": SensorEntityDescription(
+        key="WaterTemp",
+        icon="mdi:temperature-celsius",
+        name="Water Temp",
+        native_unit_of_measurement="°C",
+        device_class="temperature",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "CellCurrentmA": SensorEntityDescription(
+        key="CellCurrentmA",
+        icon="mdi:fuel-cell",
+        name="Cell Current",
+        native_unit_of_measurement="mA",
+        device_class=None,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "RealCelllevel": SensorEntityDescription(
+        key="RealCelllevel",
+        icon="mdi:fuel-cell",
+        name="Cell level",
+        native_unit_of_measurement=None,
+        device_class=None,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "PreviousDaysCellLoad": SensorEntityDescription(
+        key="PreviousDaysCellLoad",
+        icon="mdi:fuel-cell",
+        name="Cell Usage Yesterday",
+        native_unit_of_measurement="%",
+        device_class=None,
+        state_class=SensorStateClass.MEASUREMENT,
     ),
 }
 
@@ -131,7 +184,7 @@ class ChlorinatorSensor(
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._sensor = sensor
-        self._attr_unique_id = f"POOL01_{sensor}".lower()
+        self._attr_unique_id = f"HCHLOR_{sensor}".lower()
         self._attr_name = CHLORINATOR_SENSOR_TYPES[sensor].name
         self.entity_description = CHLORINATOR_SENSOR_TYPES[sensor]
         self._attr_native_unit_of_measurement = CHLORINATOR_SENSOR_TYPES[
@@ -141,8 +194,8 @@ class ChlorinatorSensor(
     @property
     def device_info(self) -> DeviceInfo | None:
         return {
-            "identifiers": {(DOMAIN, "POOL01")},
-            "name": "POOL01",
+            "identifiers": {(DOMAIN, "HCHLOR")},
+            "name": "HCHLOR",
             "model": "Viron eQuilibrium",
             "manufacturer": "Astral Pool",
         }

@@ -11,12 +11,11 @@
 
 **This component will set up the following platforms.**
 
-| Platform        | Description                                                               |
-| --------------- | ------------------------------------------------------------------------- |
-| `binary_sensor` | Show something `True` or `False`.                                         |
-| `sensor`        | Show info from Astral Pool Viron eQuilibrium Chlorinator API.             |
-| `select`        | Control the chlorinator mode (off/auto/manual)                            |
-
+| Platform        | Description                                      |
+| --------------- | ------------------------------------------------ |
+| `binary_sensor` | Show something `True` or `False`.                |
+| `sensor`        | Show info from Astral Pool Halo Chlorinator API. |
+| `select`        | Control the chlorinator mode (off/auto/manual)   |
 
 {% if not installed %}
 
@@ -32,6 +31,8 @@
 <!---->
 
 ## Credits
+
+This project was forked from [@pbutterworth](https://github.com/pbutterworth)'s' [AstralPool Chlorinator](https://github.com/pbutterworth/astralpool_chlorinator) with a future goal to merge both Halo and EQ together.
 
 This project was generated from [@oncleben31](https://github.com/oncleben31)'s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.
 

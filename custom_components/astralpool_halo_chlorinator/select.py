@@ -1,25 +1,21 @@
 """Platform for select integration."""
 from __future__ import annotations
 
-import logging
 import asyncio
+import logging
 
-from pychlorinator import chlorinator_parsers
-from homeassistant.components.select import (
-    SelectEntity,
-)
+from pychlorinator import halo_parsers
+
 from homeassistant import config_entries
+from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-)
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .const import DOMAIN
 from .coordinator import ChlorinatorDataUpdateCoordinator
 from .models import ChlorinatorData
-from .const import DOMAIN
-
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +27,10 @@ async def async_setup_entry(
 ) -> None:
     """Set up Chlorinator from a config entry."""
     data: ChlorinatorData = hass.data[DOMAIN][entry.entry_id]
-    entities = [ChlorinatorModeSelect(data.coordinator), ChlorinatorSpeedSelect(data.coordinator)]
+    entities = [
+        ChlorinatorModeSelect(data.coordinator),
+        ChlorinatorSpeedSelect(data.coordinator),
+    ]
     async_add_entities(entities)
 
 
@@ -41,9 +40,9 @@ class ChlorinatorModeSelect(
     """Representation of a Clorinator Select entity."""
 
     _attr_icon = "mdi:power"
-    _attr_options = ["Off", "Auto", "Manual"]
+    _attr_options = ["Off", "Auto", "On"]
     _attr_name = "Mode"
-    _attr_unique_id = "pool01_mode_select"
+    _attr_unique_id = "HCHLOR_mode_select"
 
     def __init__(
         self,
@@ -55,8 +54,8 @@ class ChlorinatorModeSelect(
     @property
     def device_info(self) -> DeviceInfo | None:
         return {
-            "identifiers": {(DOMAIN, "POOL01")},
-            "name": "POOL01",
+            "identifiers": {(DOMAIN, "HCHLOR")},
+            "name": "HCHLOR",
             "model": "Viron eQuilibrium",
             "manufacturer": "Astral Pool",
         }
@@ -64,28 +63,29 @@ class ChlorinatorModeSelect(
     @property
     def current_option(self):
         mode = self.coordinator.data.get("mode")
-        if mode is chlorinator_parsers.Modes.Off:
+        if mode is halo_parsers.Mode.Off:
             return "Off"
-        elif mode is chlorinator_parsers.Modes.Auto:
+        elif mode is halo_parsers.Mode.Auto:
             return "Auto"
-        else:
-            return "Manual"
+        elif mode is halo_parsers.Mode.On:
+            return "On"
 
     async def async_select_option(self, option: str) -> None:
-        """Change the selected option"""
-        action: chlorinator_parsers.ChlorinatorActions.NoAction
+        """Change the selected option."""
+        action: halo_parsers.ChlorinatorActions.NoAction
         if option == "Off":
-            action = chlorinator_parsers.ChlorinatorActions.Off
+            action = halo_parsers.ChlorinatorActions.Off
         elif option == "Auto":
-            action = chlorinator_parsers.ChlorinatorActions.Auto
-        elif option == "Manual":
-            action = chlorinator_parsers.ChlorinatorActions.Manual
+            action = halo_parsers.ChlorinatorActions.Auto
+        elif option == "On":
+            action = halo_parsers.ChlorinatorActions.On
         else:
-            action = chlorinator_parsers.ChlorinatorActions.NoAction
+            action = halo_parsers.ChlorinatorActions.NoAction
 
         await self.coordinator.chlorinator.async_write_action(action)
         await asyncio.sleep(2)
         await self.coordinator.async_request_refresh()
+
 
 class ChlorinatorSpeedSelect(
     CoordinatorEntity[ChlorinatorDataUpdateCoordinator], SelectEntity
@@ -95,7 +95,7 @@ class ChlorinatorSpeedSelect(
     _attr_icon = "mdi:pump"
     _attr_options = ["Low", "Medium", "High"]
     _attr_name = "Pump Speed"
-    _attr_unique_id = "pool01_speed_select"
+    _attr_unique_id = "HCHLOR_speed_select"
 
     def __init__(
         self,
@@ -107,8 +107,8 @@ class ChlorinatorSpeedSelect(
     @property
     def device_info(self) -> DeviceInfo | None:
         return {
-            "identifiers": {(DOMAIN, "POOL01")},
-            "name": "POOL01",
+            "identifiers": {(DOMAIN, "HCHLOR")},
+            "name": "HCHLOR",
             "model": "Viron eQuilibrium",
             "manufacturer": "Astral Pool",
         }
@@ -116,26 +116,28 @@ class ChlorinatorSpeedSelect(
     @property
     def current_option(self):
         speed = self.coordinator.data.get("pump_speed")
-        if speed is chlorinator_parsers.SpeedLevels.Low:
+        if speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.Low:
             return "Low"
-        elif speed is chlorinator_parsers.SpeedLevels.Medium:
+        elif speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.Medium:
             return "Medium"
-        elif speed is chlorinator_parsers.SpeedLevels.AI:
-            return "AI"
-        else:
+        elif speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.High:
             return "High"
+        elif speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.AI:
+            return "AI"
+        # else:
+        #     return "High"
 
     async def async_select_option(self, option: str) -> None:
-        """Change the selected option"""
-        action: chlorinator_parsers.ChlorinatorActions.NoAction
+        """Change the selected option."""
+        action: halo_parsers.ChlorinatorActions.NoAction
         if option == "Low":
-            action = chlorinator_parsers.ChlorinatorActions.Low
+            action = halo_parsers.ChlorinatorActions.Low
         elif option == "Medium":
-            action = chlorinator_parsers.ChlorinatorActions.Medium
+            action = halo_parsers.ChlorinatorActions.Medium
         elif option == "High":
-            action = chlorinator_parsers.ChlorinatorActions.High
+            action = halo_parsers.ChlorinatorActions.High
         else:
-            action = chlorinator_parsers.ChlorinatorActions.NoAction
+            action = halo_parsers.ChlorinatorActions.NoAction
 
         await self.coordinator.chlorinator.async_write_action(action)
         await asyncio.sleep(2)

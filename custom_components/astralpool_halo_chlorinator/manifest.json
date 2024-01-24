@@ -1,0 +1,25 @@
+{
+  "domain": "astralpool_halo_chlorinator",
+  "name": "Astral Pool Halo Chlorinator",
+  "bluetooth": [
+    {
+      "local_name": "HCHLOR"
+    }
+  ],
+  "codeowners": [
+    "@danielnagy"
+  ],
+  "config_flow": false,
+  "dependencies": [
+    "bluetooth_adapters"
+  ],
+  "documentation": "https://github.com/DanielNagy/astralpool_halo_chlorinator",
+  "issue_tracker": "https://github.com/DanielNagy/astralpool_halo_chlorinator/issues",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "requirements": [
+    "bluetooth-data-tools>=0.4.0",
+    "pychlorinator>=0.2.4"
+  ],
+  "version": "0.1.0"
+}

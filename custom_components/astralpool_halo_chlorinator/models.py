@@ -3,7 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from pychlorinator.chlorinator import ChlorinatorAPI
+from pychlorinator.halochlorinator import HaloChlorinatorAPI
+
 from .coordinator import ChlorinatorDataUpdateCoordinator
 
 
@@ -12,5 +13,5 @@ class ChlorinatorData:
     """Data for the chlorinator ble integration."""
 
     title: str
-    device: ChlorinatorAPI
+    device: HaloChlorinatorAPI
     coordinator: ChlorinatorDataUpdateCoordinator

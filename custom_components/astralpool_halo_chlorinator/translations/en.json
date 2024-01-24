@@ -8,7 +8,16 @@
           "username": "Username",
           "password": "Password"
         }
+      },
+      "halo_bluetooth_confirm": {
+        "description": "Confirm Add device?"
+      },
+      "pairing_timeout": {
+        "description": "The device did not enter pairing mode. Click Submit to try again.\n\n### Troubleshooting\n1. Check that the device isn't connected to the mobile app.\n2. Move your BLE device closer."
       }
+    },
+    "progress": {
+      "wait_for_pairing_mode": "To complete setup, put this device in pairing mode.\n\n### How to enter pairing mode\n1. Force quit Halo mobile apps.\n2. Go into Settings, and enable Pair Mode."
     },
     "error": {
       "auth": "Username/Password is wrong."

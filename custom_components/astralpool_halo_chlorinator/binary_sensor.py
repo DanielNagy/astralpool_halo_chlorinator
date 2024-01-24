@@ -3,23 +3,20 @@ from __future__ import annotations
 
 import logging
 
+from homeassistant import config_entries
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-)
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .const import DOMAIN
 from .coordinator import ChlorinatorDataUpdateCoordinator
 from .models import ChlorinatorData
-from .const import DOMAIN
-
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,33 +27,33 @@ CHLORINATOR_BINARY_SENSOR_TYPES: dict[str, BinarySensorEntityDescription] = {
         icon="mdi:pump",
         name="Pump",
     ),
-    "pump_is_priming": BinarySensorEntityDescription(
-        key="pump_is_priming",
-        device_class=BinarySensorDeviceClass.RUNNING,
-        icon="mdi:reload",
-        name="Pump priming",
-    ),
-    "chemistry_values_current": BinarySensorEntityDescription(
-        key="chemistry_values_current",
-        icon="mdi:check-circle-outline",
-        name="Chemistry values current",
-    ),
-    "chemistry_values_valid": BinarySensorEntityDescription(
-        key="chemistry_values_valid",
-        icon="mdi:check-circle",
-        name="Chemistry values valid",
-    ),
+    # "pump_is_priming": BinarySensorEntityDescription(
+    #     key="pump_is_priming",
+    #     device_class=BinarySensorDeviceClass.RUNNING,
+    #     icon="mdi:reload",
+    #     name="Pump priming",
+    # ),
+    # "chemistry_values_current": BinarySensorEntityDescription(
+    #     key="chemistry_values_current",
+    #     icon="mdi:check-circle-outline",
+    #     name="Chemistry values current",
+    # ),
+    # "chemistry_values_valid": BinarySensorEntityDescription(
+    #     key="chemistry_values_valid",
+    #     icon="mdi:check-circle",
+    #     name="Chemistry values valid",
+    # ),
     "cell_is_operating": BinarySensorEntityDescription(
         key="cell_is_operating",
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:fuel-cell",
         name="Cell",
     ),
-    "sanitising_until_next_timer_tomorrow": BinarySensorEntityDescription(
-        key="sanitising_until_next_timer_tomorrow",
-        icon="mdi:fuel-cell",
-        name="Sanitising until next timer tomorrow",
-    ),
+    # "sanitising_until_next_timer_tomorrow": BinarySensorEntityDescription(
+    #     key="sanitising_until_next_timer_tomorrow",
+    #     icon="mdi:fuel-cell",
+    #     name="Sanitising until next timer tomorrow",
+    # ),
 }
 
 
@@ -88,7 +85,7 @@ class ChlorinatorBinarySensor(CoordinatorEntity, BinarySensorEntity):
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._sensor = sensor
-        self._attr_unique_id = f"POOL01_{sensor}".lower()
+        self._attr_unique_id = f"HCHLOR_{sensor}".lower()
         self._attr_name = CHLORINATOR_BINARY_SENSOR_TYPES[sensor].name
         self.entity_description = CHLORINATOR_BINARY_SENSOR_TYPES[sensor]
         self._attr_device_class = CHLORINATOR_BINARY_SENSOR_TYPES[sensor].device_class
@@ -96,8 +93,8 @@ class ChlorinatorBinarySensor(CoordinatorEntity, BinarySensorEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         return {
-            "identifiers": {(DOMAIN, "POOL01")},
-            "name": "POOL01",
+            "identifiers": {(DOMAIN, "HCHLOR")},
+            "name": "HCHLOR",
             "model": "Viron eQuilibrium",
             "manufacturer": "Astral Pool",
         }
