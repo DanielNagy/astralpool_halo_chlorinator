@@ -196,7 +196,7 @@ class ChlorinatorSensor(
         return {
             "identifiers": {(DOMAIN, "HCHLOR")},
             "name": "HCHLOR",
-            "model": "Viron eQuilibrium",
+            "model": "Halo Chlor",
             "manufacturer": "Astral Pool",
         }
 

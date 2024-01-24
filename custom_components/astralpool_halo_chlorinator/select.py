@@ -56,7 +56,7 @@ class ChlorinatorModeSelect(
         return {
             "identifiers": {(DOMAIN, "HCHLOR")},
             "name": "HCHLOR",
-            "model": "Viron eQuilibrium",
+            "model": "Halo Chlor",
             "manufacturer": "Astral Pool",
         }
 
@@ -109,7 +109,7 @@ class ChlorinatorSpeedSelect(
         return {
             "identifiers": {(DOMAIN, "HCHLOR")},
             "name": "HCHLOR",
-            "model": "Viron eQuilibrium",
+            "model": "Halo Chlor",
             "manufacturer": "Astral Pool",
         }
 

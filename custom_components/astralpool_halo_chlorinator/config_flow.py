@@ -28,7 +28,7 @@ WAIT_FOR_PAIRING_TIMEOUT = 20
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for eQuilibrium Chlorinator."""
+    """Handle a config flow for Astral Chlorinator."""
 
     VERSION = 1
 

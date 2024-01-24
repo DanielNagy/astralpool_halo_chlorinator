@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Astral Pool Viron eQuilibrium Chlorinator",
+        "title": "Astral Pool Halo Chlorinator",
         "description": "Si vous avez besoin d'aide pour la configuration, regardez ici: https://github.com/pbutterworth/astralpool_chlorinator",
         "data": {
           "username": "Identifiant",
