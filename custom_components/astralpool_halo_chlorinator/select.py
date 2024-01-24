@@ -29,7 +29,7 @@ async def async_setup_entry(
     data: ChlorinatorData = hass.data[DOMAIN][entry.entry_id]
     entities = [
         ChlorinatorModeSelect(data.coordinator),
-        ChlorinatorSpeedSelect(data.coordinator),
+        # ChlorinatorSpeedSelect(data.coordinator),
     ]
     async_add_entities(entities)
 
@@ -40,7 +40,7 @@ class ChlorinatorModeSelect(
     """Representation of a Clorinator Select entity."""
 
     _attr_icon = "mdi:power"
-    _attr_options = ["Off", "Auto", "On"]
+    _attr_options = ["Off", "Auto", "Low", "Medium", "High"]
     _attr_name = "Mode"
     _attr_unique_id = "HCHLOR_mode_select"
 
@@ -63,12 +63,24 @@ class ChlorinatorModeSelect(
     @property
     def current_option(self):
         mode = self.coordinator.data.get("mode")
+        speed = self.coordinator.data.get("pump_speed")
+
         if mode is halo_parsers.Mode.Off:
             return "Off"
         elif mode is halo_parsers.Mode.Auto:
             return "Auto"
         elif mode is halo_parsers.Mode.On:
-            return "On"
+            if speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.Low:
+                return "Low"
+            elif (
+                speed
+                is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.Medium
+            ):
+                return "Medium"
+            elif (
+                speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.High
+            ):
+                return "High"
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
@@ -77,13 +89,18 @@ class ChlorinatorModeSelect(
             action = halo_parsers.ChlorinatorActions.Off
         elif option == "Auto":
             action = halo_parsers.ChlorinatorActions.Auto
-        elif option == "On":
-            action = halo_parsers.ChlorinatorActions.On
+        elif option == "Low":
+            action = halo_parsers.ChlorinatorActions.Low
+        elif option == "Medium":
+            action = halo_parsers.ChlorinatorActions.Medium
+        elif option == "High":
+            action = halo_parsers.ChlorinatorActions.High
         else:
             action = halo_parsers.ChlorinatorActions.NoAction
 
-        await self.coordinator.chlorinator.async_write_action(action)
-        await asyncio.sleep(2)
+        _LOGGER.debug("Select entity state changed to %s", action)
+        # await self.coordinator.chlorinator.async_write_action(action)
+        # await asyncio.sleep(2)
         await self.coordinator.async_request_refresh()
 
 
@@ -139,6 +156,8 @@ class ChlorinatorSpeedSelect(
         else:
             action = halo_parsers.ChlorinatorActions.NoAction
 
-        await self.coordinator.chlorinator.async_write_action(action)
+        _LOGGER.debug("Select entity state changed to %s", action)
+
+        # await self.coordinator.chlorinator.async_write_action(action)
         await asyncio.sleep(2)
         await self.coordinator.async_request_refresh()
