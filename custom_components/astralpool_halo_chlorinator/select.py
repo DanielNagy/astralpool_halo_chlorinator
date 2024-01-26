@@ -99,8 +99,8 @@ class ChlorinatorModeSelect(
             action = halo_parsers.ChlorinatorActions.NoAction
 
         _LOGGER.debug("Select entity state changed to %s", action)
-        # await self.coordinator.chlorinator.async_write_action(action)
-        # await asyncio.sleep(2)
+        await self.coordinator.chlorinator.async_write_action(action)
+        await asyncio.sleep(1)
         await self.coordinator.async_request_refresh()
 
 
