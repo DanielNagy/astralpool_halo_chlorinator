@@ -42,6 +42,7 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self._data_age >= 3:  # 3 polling events = 60 seconds
             try:
                 data = await self.chlorinator.async_gatherdata()
+                _LOGGER.debug("halo_ble_client finish: %s", data)
             except Exception as e:
                 _LOGGER.warning("Failed _gatherdata: %s %s", self._data_age, e)
                 data = {}
