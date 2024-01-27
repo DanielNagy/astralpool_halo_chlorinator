@@ -1,5 +1,7 @@
 # Astral Pool Halo Chlorinator
 
+### No Affiliation with Astral Pools or Fluindra
+
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
