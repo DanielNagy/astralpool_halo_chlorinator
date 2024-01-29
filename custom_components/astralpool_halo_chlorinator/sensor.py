@@ -152,6 +152,16 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
     ),
 }
 
+HEATER_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
+    "HeaterMode": SensorEntityDescription(
+        key="HeaterMode",
+        icon="mdi:heat-pump",
+        name="Heater Mode",
+        native_unit_of_measurement=None,
+        device_class=SensorDeviceClass.ENUM,
+    )
+}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -160,12 +170,36 @@ async def async_setup_entry(
 ) -> None:
     """Set up Chlorinator from a config entry."""
     data: ChlorinatorData = hass.data[DOMAIN][entry.entry_id]
+    coordinator = data.coordinator
+
+    async def add_heater_sensor_callback():
+        await add_heater_sensors(
+            hass, coordinator.added_entities, async_add_entities, coordinator
+        )
+
+    coordinator.add_heater_sensor_callback = add_heater_sensor_callback
+    await coordinator.async_config_entry_first_refresh()
+
     entities = [
         ChlorinatorSensor(data.coordinator, sensor_desc)
         for sensor_desc in CHLORINATOR_SENSOR_TYPES
         # if sensorDesc in CHLORINATOR_SENSOR_TYPES
     ]
     async_add_entities(entities)
+
+
+async def add_heater_sensors(hass, added_entities, async_add_entities, coordinator):
+    """Setup Heater sensors if enabled"""
+
+    new_entities = []
+    for sensor_type, sensor_desc in HEATER_SENSOR_TYPES.items():
+        unique_id = f"hchlor_{sensor_type}".lower()
+        if unique_id not in added_entities:
+            new_entities.append(HeaterSensor(coordinator, sensor_desc))
+            added_entities.add(unique_id)
+
+    if new_entities:
+        async_add_entities(new_entities)
 
 
 class ChlorinatorSensor(
@@ -202,4 +236,32 @@ class ChlorinatorSensor(
 
     @property
     def native_value(self):
+        return self.coordinator.data.get(self._sensor)
+
+
+class HeaterSensor(CoordinatorEntity[ChlorinatorDataUpdateCoordinator], SensorEntity):
+    """Representation of a Heater Sensor."""
+
+    def __init__(self, coordinator, sensor_desc: SensorEntityDescription) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+        self._sensor = sensor_desc.key
+        self._attr_unique_id = f"hchlor_{self._sensor}".lower()
+        self.entity_description = sensor_desc
+        self._attr_name = sensor_desc.name
+        self._attr_native_unit_of_measurement = sensor_desc.native_unit_of_measurement
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        # Device info remains the same
+        return {
+            "identifiers": {(DOMAIN, "HCHLOR")},
+            "name": "HCHLOR",
+            "model": "Halo Chlor",
+            "manufacturer": "Astral Pool",
+        }
+
+    @property
+    def native_value(self):
+        # Use self._sensor to fetch the relevant data from coordinator
         return self.coordinator.data.get(self._sensor)

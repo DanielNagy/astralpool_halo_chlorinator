@@ -15,7 +15,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator):
     """Data coordinator for getting Chlorinator updates."""
 
     def __init__(self, hass: HomeAssistant, chlorinator: HaloChlorinatorAPI) -> None:
@@ -34,6 +34,9 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             manufacturer="Astral Pool",
             name="HCHLOR",
         )
+        self.added_entities = set()
+        self.add_heater_sensor_callback = None
+        self.add_heater_binary_sensor_callback = None
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
@@ -42,15 +45,28 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self._data_age >= 3:  # 3 polling events = 60 seconds
             try:
                 data = await self.chlorinator.async_gatherdata()
-                _LOGGER.debug("halo_ble_client finish: %s", data)
+                _LOGGER.debug("halo_ble_client finish: %s", dict(sorted(data.items())))
             except Exception as e:
                 _LOGGER.warning("Failed _gatherdata: %s %s", self._data_age, e)
                 data = {}
             if data != {}:
                 self.data = data
                 self._data_age = 0
+
+                if "HeaterEnabled" in data and data["HeaterEnabled"] == 1:
+                    _LOGGER.debug("HeaterEnabled : %s", data["HeaterEnabled"])
+                    if (
+                        self.add_heater_sensor_callback
+                        and self.add_heater_binary_sensor_callback is not None
+                    ):
+                        await self.add_heater_sensor_callback()
+                        await self.add_heater_binary_sensor_callback()
+                    else:
+                        _LOGGER.warning("add_heater_callback(s) not set")
+
             elif self._data_age >= 15:  # 15 polling events  = 5 minutes
                 self.data = {}
                 _LOGGER.error("Failed _gatherdata, giving up: %s", self._data_age)
                 raise UpdateFailed("Error communicating with API")
+
         return self.data

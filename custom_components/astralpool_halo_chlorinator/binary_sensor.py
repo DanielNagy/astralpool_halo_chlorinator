@@ -56,6 +56,15 @@ CHLORINATOR_BINARY_SENSOR_TYPES: dict[str, BinarySensorEntityDescription] = {
     # ),
 }
 
+HEATER_BINARY_SENSOR_TYPES: dict[str, BinarySensorEntityDescription] = {
+    "HeaterOn": BinarySensorEntityDescription(
+        key="HeaterOn",
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:fire",
+        name="Heater On",
+    )
+}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -64,12 +73,37 @@ async def async_setup_entry(
 ) -> None:
     """Set up Chlorinator binary sensors from a config entry."""
     data: ChlorinatorData = hass.data[DOMAIN][entry.entry_id]
+    coordinator = data.coordinator
+
+    async def add_heater_binary_sensor_callback():
+        await add_heater_binary_sensors(
+            hass, coordinator.added_entities, async_add_entities, coordinator
+        )
+
+    coordinator.add_heater_binary_sensor_callback = add_heater_binary_sensor_callback
+    await coordinator.async_config_entry_first_refresh()
 
     entities = [
         ChlorinatorBinarySensor(data.coordinator, sensor_desc)
         for sensor_desc in CHLORINATOR_BINARY_SENSOR_TYPES
     ]
     async_add_entities(entities)
+
+
+async def add_heater_binary_sensors(
+    hass, added_entities, async_add_entities, coordinator
+):
+    """Setup Heater sensors if enabled"""
+
+    new_entities = []
+    for sensor_type, sensor_desc in HEATER_BINARY_SENSOR_TYPES.items():
+        unique_id = f"hchlor_{sensor_type}".lower()
+        if unique_id not in added_entities:
+            new_entities.append(HeaterBinarySensor(coordinator, sensor_desc))
+            added_entities.add(unique_id)
+
+    if new_entities:
+        async_add_entities(new_entities)
 
 
 class ChlorinatorBinarySensor(CoordinatorEntity, BinarySensorEntity):
@@ -89,6 +123,35 @@ class ChlorinatorBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._attr_name = CHLORINATOR_BINARY_SENSOR_TYPES[sensor].name
         self.entity_description = CHLORINATOR_BINARY_SENSOR_TYPES[sensor]
         self._attr_device_class = CHLORINATOR_BINARY_SENSOR_TYPES[sensor].device_class
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        return {
+            "identifiers": {(DOMAIN, "HCHLOR")},
+            "name": "HCHLOR",
+            "model": "Halo Chlor",
+            "manufacturer": "Astral Pool",
+        }
+
+    @property
+    def is_on(self) -> bool:
+        """Return the state of the sensor."""
+        return self.coordinator.data.get(self._sensor)
+
+
+class HeaterBinarySensor(CoordinatorEntity, BinarySensorEntity):
+    """Representation of a Clorinator binary sensor."""
+
+    _attr_name = "Pump is operating"
+
+    def __init__(self, coordinator, sensor_desc: BinarySensorEntityDescription):
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+        self._sensor = sensor_desc.key
+        self._attr_unique_id = f"hchlor_{self._sensor}".lower()
+        self.entity_description = sensor_desc
+        self._attr_name = sensor_desc.name
+        self._attr_device_class = sensor_desc.device_class
 
     @property
     def device_info(self) -> DeviceInfo | None:
