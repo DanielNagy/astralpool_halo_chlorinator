@@ -9,6 +9,7 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
+    EntityCategory,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
@@ -109,6 +110,7 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         native_unit_of_measurement="L",
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     "DosingPumpSecs": SensorEntityDescription(
         key="DosingPumpSecs",
@@ -133,6 +135,7 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         native_unit_of_measurement="mA",
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     "RealCelllevel": SensorEntityDescription(
         key="RealCelllevel",
@@ -141,6 +144,7 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         native_unit_of_measurement=None,
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     "PreviousDaysCellLoad": SensorEntityDescription(
         key="PreviousDaysCellLoad",

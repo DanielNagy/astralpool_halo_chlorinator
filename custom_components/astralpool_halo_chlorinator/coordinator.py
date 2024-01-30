@@ -15,7 +15,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 
-class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator):
+class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Data coordinator for getting Chlorinator updates."""
 
     def __init__(self, hass: HomeAssistant, chlorinator: HaloChlorinatorAPI) -> None:
