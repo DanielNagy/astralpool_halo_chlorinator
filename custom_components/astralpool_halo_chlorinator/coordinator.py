@@ -37,6 +37,7 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.added_entities = set()
         self.add_heater_sensor_callback = None
         self.add_heater_binary_sensor_callback = None
+        self.add_heater_select_callback = None
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
@@ -57,12 +58,17 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     _LOGGER.debug("HeaterEnabled : %s", data["HeaterEnabled"])
                     if (
                         self.add_heater_sensor_callback
-                        and self.add_heater_binary_sensor_callback is not None
+                        and self.add_heater_binary_sensor_callback
+                        and self.add_heater_select_callback is not None
                     ):
                         await self.add_heater_sensor_callback()
                         await self.add_heater_binary_sensor_callback()
+                        await self.add_heater_select_callback()
                     else:
                         _LOGGER.warning("add_heater_callback(s) not set")
+
+                if "PoolSpaEnabled" in data and data["PoolSpaEnabled"] == 1:
+                    _LOGGER.debug("PoolSpaEnabled : %s", data["PoolSpaEnabled"])
 
             elif self._data_age >= 15:  # 15 polling events  = 5 minutes
                 self.data = {}
