@@ -65,6 +65,15 @@ HEATER_BINARY_SENSOR_TYPES: dict[str, BinarySensorEntityDescription] = {
     )
 }
 
+SOLAR_BINARY_SENSOR_TYPES: dict[str, BinarySensorEntityDescription] = {
+    "SolarPumpState": BinarySensorEntityDescription(
+        key="SolarPumpState",
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:pump",
+        name="Solar Pump On",
+    )
+}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -75,12 +84,24 @@ async def async_setup_entry(
     data: ChlorinatorData = hass.data[DOMAIN][entry.entry_id]
     coordinator = data.coordinator
 
-    async def add_heater_binary_sensor_callback():
-        await add_heater_binary_sensors(
-            hass, coordinator.added_entities, async_add_entities, coordinator
-        )
+    async def add_binary_sensor_callback(sensor_type):
+        binary_sensor_types_dict = {
+            "SolarEnabled": SOLAR_BINARY_SENSOR_TYPES,
+            "HeaterEnabled": HEATER_BINARY_SENSOR_TYPES,
+        }
+        sensor_descs = binary_sensor_types_dict.get(sensor_type, {})
 
-    coordinator.add_heater_binary_sensor_callback = add_heater_binary_sensor_callback
+        new_entities = []
+        for sensor_type, sensor_desc in sensor_descs.items():
+            unique_id = f"hchlor_{sensor_type}".lower()
+            if unique_id not in coordinator.added_entities:
+                new_entities.append(HeaterBinarySensor(coordinator, sensor_desc))
+                coordinator.added_entities.add(unique_id)
+
+        if new_entities:
+            async_add_entities(new_entities)
+
+    coordinator.add_binary_sensor_callback = add_binary_sensor_callback
     await coordinator.async_config_entry_first_refresh()
 
     entities = [
@@ -88,22 +109,6 @@ async def async_setup_entry(
         for sensor_desc in CHLORINATOR_BINARY_SENSOR_TYPES
     ]
     async_add_entities(entities)
-
-
-async def add_heater_binary_sensors(
-    hass, added_entities, async_add_entities, coordinator
-):
-    """Setup Heater sensors if enabled"""
-
-    new_entities = []
-    for sensor_type, sensor_desc in HEATER_BINARY_SENSOR_TYPES.items():
-        unique_id = f"hchlor_{sensor_type}".lower()
-        if unique_id not in added_entities:
-            new_entities.append(HeaterBinarySensor(coordinator, sensor_desc))
-            added_entities.add(unique_id)
-
-    if new_entities:
-        async_add_entities(new_entities)
 
 
 class ChlorinatorBinarySensor(CoordinatorEntity, BinarySensorEntity):

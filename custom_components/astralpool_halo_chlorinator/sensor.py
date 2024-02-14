@@ -5,11 +5,11 @@ import logging
 
 from homeassistant import config_entries
 from homeassistant.components.sensor import (
+    EntityCategory,
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
-    EntityCategory,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
@@ -119,11 +119,12 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         native_unit_of_measurement="mL",
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     "WaterTemp": SensorEntityDescription(
         key="WaterTemp",
         icon="mdi:temperature-celsius",
-        name="Water Temp",
+        name="Water Temperature",
         native_unit_of_measurement="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
@@ -153,6 +154,7 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         native_unit_of_measurement="%",
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 }
 
@@ -166,6 +168,33 @@ HEATER_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
     )
 }
 
+SOLAR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
+    "SolarRoof": SensorEntityDescription(
+        key="SolarRoof",
+        icon="mdi:temperature-celsius",
+        name="Solar Roof Temperature",
+        native_unit_of_measurement="°C",
+        device_class="temperature",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "SolarWater": SensorEntityDescription(
+        key="SolarWater",
+        icon="mdi:temperature-celsius",
+        name="Solar Water Temperature",
+        native_unit_of_measurement="°C",
+        device_class="temperature",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "SolarMode": SensorEntityDescription(
+        key="SolarMode",
+        icon="mdi:solar-power-variant",
+        name="Solar Mode",
+        native_unit_of_measurement=None,
+        device_class=SensorDeviceClass.ENUM,
+        state_class=None,
+    ),
+}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -176,34 +205,31 @@ async def async_setup_entry(
     data: ChlorinatorData = hass.data[DOMAIN][entry.entry_id]
     coordinator = data.coordinator
 
-    async def add_heater_sensor_callback():
-        await add_heater_sensors(
-            hass, coordinator.added_entities, async_add_entities, coordinator
-        )
+    async def add_sensor_callback(sensor_type):
+        sensor_types_dict = {
+            "SolarEnabled": SOLAR_SENSOR_TYPES,
+            "HeaterEnabled": HEATER_SENSOR_TYPES,
+        }
+        sensor_descs = sensor_types_dict.get(sensor_type, {})
 
-    coordinator.add_heater_sensor_callback = add_heater_sensor_callback
+        new_entities = []
+        for sensor_type, sensor_desc in sensor_descs.items():
+            unique_id = f"hchlor_{sensor_type}".lower()
+            if unique_id not in coordinator.added_entities:
+                new_entities.append(HeaterSensor(coordinator, sensor_desc))
+                coordinator.added_entities.add(unique_id)
+
+        if new_entities:
+            async_add_entities(new_entities)
+
+    coordinator.add_sensor_callback = add_sensor_callback
     await coordinator.async_config_entry_first_refresh()
 
     entities = [
         ChlorinatorSensor(data.coordinator, sensor_desc)
         for sensor_desc in CHLORINATOR_SENSOR_TYPES
-        # if sensorDesc in CHLORINATOR_SENSOR_TYPES
     ]
     async_add_entities(entities)
-
-
-async def add_heater_sensors(hass, added_entities, async_add_entities, coordinator):
-    """Setup Heater sensors if enabled"""
-
-    new_entities = []
-    for sensor_type, sensor_desc in HEATER_SENSOR_TYPES.items():
-        unique_id = f"hchlor_{sensor_type}".lower()
-        if unique_id not in added_entities:
-            new_entities.append(HeaterSensor(coordinator, sensor_desc))
-            added_entities.add(unique_id)
-
-    if new_entities:
-        async_add_entities(new_entities)
 
 
 class ChlorinatorSensor(
