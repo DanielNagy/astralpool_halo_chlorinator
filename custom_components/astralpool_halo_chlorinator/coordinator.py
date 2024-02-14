@@ -35,8 +35,8 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             name="HCHLOR",
         )
         self.added_entities = set()
-        self.add_heater_sensor_callback = None
-        self.add_heater_binary_sensor_callback = None
+        self.add_sensor_callback = None
+        self.add_binary_sensor_callback = None
         self.add_heater_select_callback = None
 
     async def _async_update_data(self):
@@ -54,18 +54,23 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 self.data = data
                 self._data_age = 0
 
+                if "SolarEnabled" in data and data["SolarEnabled"] == 1:
+                    _LOGGER.debug("SolarEnabled : %s", data["SolarEnabled"])
+                    if hasattr(self, "add_sensor_callback"):
+                        await self.add_sensor_callback("SolarEnabled")
+                    if hasattr(self, "add_binary_sensor_callback"):
+                        await self.add_binary_sensor_callback("SolarEnabled")
+
                 if "HeaterEnabled" in data and data["HeaterEnabled"] == 1:
                     _LOGGER.debug("HeaterEnabled : %s", data["HeaterEnabled"])
-                    if (
-                        self.add_heater_sensor_callback
-                        and self.add_heater_binary_sensor_callback
-                        and self.add_heater_select_callback is not None
-                    ):
-                        await self.add_heater_sensor_callback()
-                        await self.add_heater_binary_sensor_callback()
+                    if hasattr(self, "add_sensor_callback"):
+                        await self.add_sensor_callback("HeaterEnabled")
+
+                    if hasattr(self, "add_binary_sensor_callback"):
+                        await self.add_binary_sensor_callback("HeaterEnabled")
+
+                    if hasattr(self, "add_heater_select_callback"):
                         await self.add_heater_select_callback()
-                    else:
-                        _LOGGER.warning("add_heater_callback(s) not set")
 
                 if "PoolSpaEnabled" in data and data["PoolSpaEnabled"] == 1:
                     _LOGGER.debug("PoolSpaEnabled : %s", data["PoolSpaEnabled"])
