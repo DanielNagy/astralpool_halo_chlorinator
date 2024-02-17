@@ -30,19 +30,30 @@ async def async_setup_entry(
     coordinator = data.coordinator
     entities = [
         ChlorinatorModeSelect(data.coordinator),
-        # HeaterModeSelect(data.coordinator),
-        # ChlorinatorSpeedSelect(data.coordinator),
     ]
 
-    async def add_heater_select_callback():  # Callback renamed and no parameters
-        unique_id = (
-            "hchlor_heater_mode_select"  # Example unique ID for HeaterModeSelect
-        )
-        if unique_id not in coordinator.added_entities:
-            async_add_entities([HeaterModeSelect(coordinator)], update_before_add=True)
-            coordinator.added_entities.add(unique_id)  # Mark as added
+    async def add_dynamic_select_entities(device_type):
+        new_entities = []
 
-    coordinator.add_heater_select_callback = add_heater_select_callback
+        if device_type == "HeaterEnabled" and not hasattr(
+            coordinator, "heater_mode_select_added"
+        ):
+            new_entities.append(HeaterModeSelect(coordinator))
+            coordinator.heater_mode_select_added = True  # Prevents re-adding
+
+        if device_type == "SolarEnabled" and not hasattr(
+            coordinator, "solar_mode_select_added"
+        ):
+            new_entities.append(SolarModeSelect(coordinator))
+            coordinator.solar_mode_select_added = True  # Prevents re-adding
+
+        if new_entities:
+            async_add_entities(new_entities)
+
+    # Assign the dynamic entity adder to the coordinator for easy access
+    coordinator.add_dynamic_select_entities = add_dynamic_select_entities
+
+    # Initial refresh to ensure current state is up to date
     await coordinator.async_config_entry_first_refresh()
 
     async_add_entities(entities)
@@ -114,6 +125,7 @@ class ChlorinatorModeSelect(
 
         _LOGGER.debug("Select entity state changed to %s", action)
         await self.coordinator.chlorinator.async_write_action(action)
+        self.coordinator.reset_data_age()
         await asyncio.sleep(1)
         await self.coordinator.async_request_refresh()
 
@@ -169,19 +181,20 @@ class HeaterModeSelect(
 
         _LOGGER.debug("Select Heater entity state changed to %s", action)
         await self.coordinator.chlorinator.async_write_heater_action(action)
+        self.coordinator.reset_data_age()
         await asyncio.sleep(1)
         await self.coordinator.async_request_refresh()
 
 
-class ChlorinatorSpeedSelect(
+class SolarModeSelect(
     CoordinatorEntity[ChlorinatorDataUpdateCoordinator], SelectEntity
 ):
     """Representation of a Clorinator Select entity."""
 
-    _attr_icon = "mdi:pump"
-    _attr_options = ["Low", "Medium", "High"]
-    _attr_name = "Pump Speed"
-    _attr_unique_id = "HCHLOR_speed_select"
+    _attr_icon = "mdi:power"
+    _attr_options = ["Off", "Auto", "On"]
+    _attr_name = "Solar Mode"
+    _attr_unique_id = "HCHLOR_solar_onoff_select"
 
     def __init__(
         self,
@@ -201,32 +214,29 @@ class ChlorinatorSpeedSelect(
 
     @property
     def current_option(self):
-        speed = self.coordinator.data.get("pump_speed")
-        if speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.Low:
-            return "Low"
-        elif speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.Medium:
-            return "Medium"
-        elif speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.High:
-            return "High"
-        elif speed is halo_parsers.EquipmentParameterCharacteristic.SpeedLevels.AI:
-            return "AI"
-        # else:
-        #     return "High"
+        mode = self.coordinator.data.get("SolarMode")
+
+        if mode is halo_parsers.Mode.Off:
+            return "Off"
+        elif mode is halo_parsers.Mode.Auto:
+            return "Auto"
+        elif mode is halo_parsers.Mode.On:
+            return "On"
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        action: halo_parsers.ChlorinatorActions.NoAction
-        if option == "Low":
-            action = halo_parsers.ChlorinatorActions.Low
-        elif option == "Medium":
-            action = halo_parsers.ChlorinatorActions.Medium
-        elif option == "High":
-            action = halo_parsers.ChlorinatorActions.High
+        action: halo_parsers.SolarAppActions.NoAction
+        if option == "Off":
+            action = halo_parsers.SolarAppActions.Off
+        elif option == "Auto":
+            action = halo_parsers.SolarAppActions.Auto
+        elif option == "On":
+            action = halo_parsers.SolarAppActions.On
         else:
-            action = halo_parsers.ChlorinatorActions.NoAction
+            action = halo_parsers.SolarAppActions.NoAction
 
-        _LOGGER.debug("Select entity state changed to %s", action)
-
-        # await self.coordinator.chlorinator.async_write_action(action)
-        await asyncio.sleep(2)
+        _LOGGER.debug("Select Solar entity state changed to %s", action)
+        await self.coordinator.chlorinator.async_write_solar_action(action)
+        self.coordinator.reset_data_age()
+        await asyncio.sleep(1)
         await self.coordinator.async_request_refresh()

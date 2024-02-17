@@ -37,7 +37,11 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.added_entities = set()
         self.add_sensor_callback = None
         self.add_binary_sensor_callback = None
-        self.add_heater_select_callback = None
+        self.add_dynamic_select_entities = None
+
+    def reset_data_age(self):
+        """Resets the data age to 3 to make sure async_gatherdata is executed."""
+        self._data_age = 3
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
@@ -60,17 +64,17 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         await self.add_sensor_callback("SolarEnabled")
                     if hasattr(self, "add_binary_sensor_callback"):
                         await self.add_binary_sensor_callback("SolarEnabled")
+                    if hasattr(self, "add_dynamic_select_entities"):
+                        await self.add_dynamic_select_entities("SolarEnabled")
 
                 if "HeaterEnabled" in data and data["HeaterEnabled"] == 1:
                     _LOGGER.debug("HeaterEnabled : %s", data["HeaterEnabled"])
                     if hasattr(self, "add_sensor_callback"):
                         await self.add_sensor_callback("HeaterEnabled")
-
                     if hasattr(self, "add_binary_sensor_callback"):
                         await self.add_binary_sensor_callback("HeaterEnabled")
-
-                    if hasattr(self, "add_heater_select_callback"):
-                        await self.add_heater_select_callback()
+                    if hasattr(self, "add_dynamic_select_entities"):
+                        await self.add_dynamic_select_entities("HeaterEnabled")
 
                 if "PoolSpaEnabled" in data and data["PoolSpaEnabled"] == 1:
                     _LOGGER.debug("PoolSpaEnabled : %s", data["PoolSpaEnabled"])
