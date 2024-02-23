@@ -87,16 +87,29 @@ custom_components/astralpool_halo_chlorinator/switch.py
 [![Open your Home Assistant Integrations Dashboard.](https://my.home-assistant.io/badges/integrations.svg)](https://my.home-assistant.io/redirect/integrations/)
 
 2. Wait patiently for your chlorinator to be discovered (should only be a few seconds once HA has started up)
-3. When the halo device is detected in Home Assistant, click 'Configure'.
+3. When the Halo device is detected in Home Assistant, you will see a new HCHLOR integration card with button for 'Configure'.
 4. Go to your physical Halo Control Panel (the one near your pool) to start the pairing process.
+- Note: Take a mobile device or laptop so you can control Home Assistant and the Chlorinator from the same place.
 
 ## Pair Your HALO
-1. Put your HALO into pairing mode.
-2. Press submit to confirm 'add device'.
-3. It will either error or the circle will just spin forever.
-4. If it errors, hit config / add / confirm again (whilst the Halo is still in pairing mode).
-5. If it is spinning, just wait approx 30 seconds, then cancel it, and hit configure again.
-6. It should then ask you what area the Halo is located, and will be added to HA.
+1. Open your Home Assistant Integrations page
+2. Click the 'Configure' button on the newly discovered HCHLOR device.
+3. Press submit to confirm 'add device'.
+4. Home Assistant will start polling for new pairing connections.
+
+On Halo Control Panel:
+4. Put your HALO into pairing mode.
+
+On Home Assistant: 
+5. Once discovered, Home Assistant will ask you what HA Area the Halo is located. Select your area as desired.
+6. Your Halo should now be added to HA as 1 new device with ~19 entities.
+
+Troubleshooting:
+1. The HA pairing discovery may either error or the circle might just spin forever.
+2. If it errors, hit config / add / confirm again (whilst the Halo is still in pairing mode).
+3. If it is spinning, just wait approx 30 seconds, then cancel it, and hit configure again.
+4. Repeat as needed until the pairing is successful.
+
 
 # Note
 Halo only supports one concurrent Bluetooth or Cloud connection at any point in time.  
