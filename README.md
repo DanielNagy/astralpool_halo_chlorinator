@@ -89,20 +89,16 @@ custom_components/astralpool_halo_chlorinator/switch.py
 2. Wait patiently for your chlorinator to be discovered (should only be a few seconds once HA has started up)
 3. When the Halo device is detected in Home Assistant, you will see a new HCHLOR integration card with button for 'Configure'.
 4. Go to your physical Halo Control Panel (the one near your pool) to start the pairing process.
-- Note: Take a mobile device or laptop so you can control Home Assistant and the Chlorinator from the same place.
+- Take a mobile device or laptop with you so you can control Home Assistant and the Chlorinator from the same place.
 
 ## Pair Your HALO
 1. Open your Home Assistant Integrations page
 2. Click the 'Configure' button on the newly discovered HCHLOR device.
 3. Press submit to confirm 'add device'.
 4. Home Assistant will start polling for new pairing connections.
-
-On Halo Control Panel:
-4. Put your HALO into pairing mode.
-
-On Home Assistant: 
-5. Once discovered, Home Assistant will ask you what HA Area the Halo is located. Select your area as desired.
-6. Your Halo should now be added to HA as 1 new device with ~19 entities.
+5. On Halo Control Panel: Put your HALO into pairing mode.
+6. On Home Assistant: Once discovered, Home Assistant will ask you what HA Area the Halo is located. Select your area as desired.
+7. Your Halo should now be added to HA as 1 new device with ~19 entities.
 
 Troubleshooting:
 1. The HA pairing discovery may either error or the circle might just spin forever.
