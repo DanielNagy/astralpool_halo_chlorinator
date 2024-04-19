@@ -19,7 +19,7 @@
   "iot_class": "local_polling",
   "requirements": [
     "bluetooth-data-tools>=0.4.0",
-    "pychlorinator>=0.2.10"
+    "pychlorinator>=0.2.11"
   ],
   "version": "0.1.7"
 }
