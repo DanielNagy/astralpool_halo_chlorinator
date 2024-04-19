@@ -1,4 +1,5 @@
 """Platform for sensor integration."""
+
 from __future__ import annotations
 
 import logging
@@ -27,8 +28,8 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         key="ph_measurement",
         icon="mdi:ph",
         name="pH",
-        native_unit_of_measurement=None,
-        device_class=None,
+        # native_unit_of_measurement="pH",
+        device_class=SensorDeviceClass.PH,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     "mode": SensorEntityDescription(
@@ -55,6 +56,14 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         device_class=SensorDeviceClass.ENUM,
         state_class=None,
     ),
+    "ph_control_status": SensorEntityDescription(
+        key="ph_control_status",
+        icon="mdi:beaker-outline",
+        name="pH status",
+        native_unit_of_measurement=None,
+        device_class=SensorDeviceClass.ENUM,
+        state_class=None,
+    ),
     "info_message": SensorEntityDescription(
         key="info_message",
         icon="mdi:information-outline",
@@ -67,8 +76,8 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         key="ph_control_setpoint",
         icon="mdi:ph",
         name="pH setpoint",
-        native_unit_of_measurement=None,
-        device_class=None,
+        # native_unit_of_measurement="pH",
+        device_class=SensorDeviceClass.PH,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     "chlorine_control_setpoint": SensorEntityDescription(
@@ -108,8 +117,8 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         icon="mdi:chart-line",
         name="Litres left to Filter",
         native_unit_of_measurement="L",
-        device_class=None,
-        state_class=SensorStateClass.MEASUREMENT,
+        device_class=SensorDeviceClass.VOLUME,
+        state_class=SensorStateClass.TOTAL,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     "DosingPumpSecs": SensorEntityDescription(
@@ -117,8 +126,8 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         icon="mdi:chart-line",
         name="Dosing Pump today (ml)",
         native_unit_of_measurement="mL",
-        device_class=None,
-        state_class=SensorStateClass.MEASUREMENT,
+        device_class=SensorDeviceClass.VOLUME,
+        state_class=SensorStateClass.TOTAL,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     "WaterTemp": SensorEntityDescription(
@@ -126,7 +135,7 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         icon="mdi:temperature-celsius",
         name="Water Temperature",
         native_unit_of_measurement="°C",
-        device_class="temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     "CellCurrentmA": SensorEntityDescription(
