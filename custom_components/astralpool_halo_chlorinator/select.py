@@ -1,4 +1,5 @@
 """Platform for select integration."""
+
 from __future__ import annotations
 
 import asyncio
@@ -8,6 +9,7 @@ from pychlorinator import halo_parsers
 
 from homeassistant import config_entries
 from homeassistant.components.select import SelectEntity
+from homeassistant.components.switch import SwitchDeviceClass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -46,6 +48,12 @@ async def async_setup_entry(
         ):
             new_entities.append(SolarModeSelect(coordinator))
             coordinator.solar_mode_select_added = True  # Prevents re-adding
+
+        if device_type == "LightingEnabled" and not hasattr(
+            coordinator, "lighting_mode_select_added"
+        ):
+            new_entities.append(LightingModeSelect(coordinator))
+            coordinator.lighting_mode_select_added = True  # Prevents re-adding
 
         if new_entities:
             async_add_entities(new_entities)
@@ -240,3 +248,73 @@ class SolarModeSelect(
         self.coordinator.reset_data_age()
         await asyncio.sleep(1)
         await self.coordinator.async_request_refresh()
+
+
+class LightingModeSelect(
+    CoordinatorEntity[ChlorinatorDataUpdateCoordinator], SelectEntity
+):
+    """Representation of a Clorinator Light Select entity."""
+
+    _attr_icon = "mdi:power"
+    _attr_options = ["Off", "Auto", "On"]
+    _attr_name = "Light Mode Zone1"
+    _attr_unique_id = "HCHLOR_lightz1_onoff_select"
+    _attr_device_class = SwitchDeviceClass.SWITCH
+
+    def __init__(
+        self,
+        coordinator: ChlorinatorDataUpdateCoordinator,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        return {
+            "identifiers": {(DOMAIN, "HCHLOR")},
+            "name": "HCHLOR",
+            "model": "Halo Chlor",
+            "manufacturer": "Astral Pool",
+        }
+
+    @property
+    def current_option(self):
+        mode = self.coordinator.data.get("LightingMode_1")
+
+        if mode is halo_parsers.Mode.Off:
+            return "Off"
+        elif mode is halo_parsers.Mode.Auto:
+            return "Auto"
+        elif mode is halo_parsers.Mode.On:
+            return "On"
+
+    async def async_select_option(self, option: str) -> None:
+        """Change the selected option."""
+        action: halo_parsers.LightAppActions.NoAction
+        if option == "Off":
+            action = halo_parsers.LightAppActions.TurnOffZone
+        elif option == "Auto":
+            action = halo_parsers.LightAppActions.SetZoneModeToAuto
+        elif option == "On":
+            action = halo_parsers.LightAppActions.TurnOnZone
+        else:
+            action = halo_parsers.LightAppActions.NoAction
+
+        _LOGGER.debug("Select Light Z1 entity state changed to %s", action)
+        await self.coordinator.chlorinator.async_write_light_action(action)
+        self.coordinator.reset_data_age()
+        await asyncio.sleep(1)
+        await self.coordinator.async_request_refresh()
+
+    @property
+    def is_on(self) -> bool:
+        """Return true if the light is on."""
+        return self.current_option == "On"
+
+    async def async_turn_on(self, **kwargs):
+        """Turn the light on."""
+        await self.async_select_option("On")
+
+    async def async_turn_off(self, **kwargs):
+        """Turn the light off."""
+        await self.async_select_option("Off")
