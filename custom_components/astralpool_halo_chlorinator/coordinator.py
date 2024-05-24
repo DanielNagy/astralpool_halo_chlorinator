@@ -79,6 +79,12 @@ class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 if "PoolSpaEnabled" in data and data["PoolSpaEnabled"] == 1:
                     _LOGGER.debug("PoolSpaEnabled : %s", data["PoolSpaEnabled"])
 
+                if "LightingEnabled" in data and data["LightingEnabled"] == 1:
+                    _LOGGER.debug("LightingEnabled : %s", data["LightingEnabled"])
+                    _LOGGER.debug("NumZonesInUse : %s", data["NumZonesInUse"])
+                    if hasattr(self, "add_dynamic_select_entities"):
+                        await self.add_dynamic_select_entities("LightingEnabled")
+
             elif self._data_age >= 15:  # 15 polling events  = 5 minutes
                 self.data = {}
                 _LOGGER.error("Failed _gatherdata, giving up: %s", self._data_age)
