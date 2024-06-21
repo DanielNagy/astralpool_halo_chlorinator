@@ -72,6 +72,14 @@ CHLORINATOR_SENSOR_TYPES: dict[str, SensorEntityDescription] = {
         device_class=SensorDeviceClass.ENUM,
         state_class=None,
     ),
+    "error_status": SensorEntityDescription(
+        key="error_message",
+        icon="mdi:alert-circle-outline",
+        name="Error message",
+        native_unit_of_measurement=None,
+        device_class=SensorDeviceClass.ENUM,
+        state_class=None,
+    ),
     "ph_control_setpoint": SensorEntityDescription(
         key="ph_control_setpoint",
         icon="mdi:ph",
