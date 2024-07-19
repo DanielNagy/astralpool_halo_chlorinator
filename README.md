@@ -1,6 +1,7 @@
+# This only works on Halo Firmware upto 2.3!!! Details here https://community.home-assistant.io/t/viron-astral-pool-chlorinatorgo-integration/375495/408
 # Astral Pool Halo Chlorinator
+# No Affiliation with Astral Pools or Fluidra
 
-### No Affiliation with Astral Pools or Fluidra
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
