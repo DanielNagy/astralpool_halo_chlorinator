@@ -6,8 +6,9 @@ from typing import Any
 
 from pychlorinator.halochlorinator import HaloChlorinatorAPI
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN
@@ -18,11 +19,17 @@ _LOGGER = logging.getLogger(__name__)
 class ChlorinatorDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Data coordinator for getting Chlorinator updates."""
 
-    def __init__(self, hass: HomeAssistant, chlorinator: HaloChlorinatorAPI) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        chlorinator: HaloChlorinatorAPI,
+    ) -> None:
         """Initialise the coordinator."""
         super().__init__(
             hass,
             _LOGGER,
+            config_entry=config_entry,
             name=DOMAIN,
             update_interval=timedelta(seconds=20),
         )

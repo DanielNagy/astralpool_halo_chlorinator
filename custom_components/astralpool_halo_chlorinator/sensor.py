@@ -13,7 +13,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -274,12 +274,12 @@ class ChlorinatorSensor(
 
     @property
     def device_info(self) -> DeviceInfo | None:
-        return {
-            "identifiers": {(DOMAIN, "HCHLOR")},
-            "name": "HCHLOR",
-            "model": "Halo Chlor",
-            "manufacturer": "Astral Pool",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, "HCHLOR")},
+            name="HCHLOR",
+            model="Halo Chlor",
+            manufacturer="Astral Pool",
+        )
 
     @property
     def native_value(self):
@@ -301,12 +301,12 @@ class HeaterSensor(CoordinatorEntity[ChlorinatorDataUpdateCoordinator], SensorEn
     @property
     def device_info(self) -> DeviceInfo | None:
         # Device info remains the same
-        return {
-            "identifiers": {(DOMAIN, "HCHLOR")},
-            "name": "HCHLOR",
-            "model": "Halo Chlor",
-            "manufacturer": "Astral Pool",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, "HCHLOR")},
+            name="HCHLOR",
+            model="Halo Chlor",
+            manufacturer="Astral Pool",
+        )
 
     @property
     def native_value(self):
