@@ -41,7 +41,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     else:
         chlorinator = ChlorinatorAPI(ble_device, accesscode)
 
-    coordinator = ChlorinatorDataUpdateCoordinator(hass, chlorinator)
+    coordinator = ChlorinatorDataUpdateCoordinator(hass, entry, chlorinator)
     await coordinator.async_config_entry_first_refresh()
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = ChlorinatorData(
@@ -55,9 +55,4 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    unload_ok = True
-    for platform in PLATFORMS:
-        if not await hass.config_entries.async_forward_entry_unload(entry, platform):
-            unload_ok = False
-
-    return unload_ok
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)

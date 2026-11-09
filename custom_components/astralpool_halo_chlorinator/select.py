@@ -11,7 +11,7 @@ from homeassistant import config_entries
 from homeassistant.components.select import SelectEntity
 from homeassistant.components.switch import SwitchDeviceClass
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -86,12 +86,12 @@ class ChlorinatorModeSelect(
 
     @property
     def device_info(self) -> DeviceInfo | None:
-        return {
-            "identifiers": {(DOMAIN, "HCHLOR")},
-            "name": "HCHLOR",
-            "model": "Halo Chlor",
-            "manufacturer": "Astral Pool",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, "HCHLOR")},
+            name="HCHLOR",
+            model="Halo Chlor",
+            manufacturer="Astral Pool",
+        )
 
     @property
     def current_option(self):
@@ -157,12 +157,12 @@ class HeaterModeSelect(
 
     @property
     def device_info(self) -> DeviceInfo | None:
-        return {
-            "identifiers": {(DOMAIN, "HCHLOR")},
-            "name": "HCHLOR",
-            "model": "Halo Chlor",
-            "manufacturer": "Astral Pool",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, "HCHLOR")},
+            name="HCHLOR",
+            model="Halo Chlor",
+            manufacturer="Astral Pool",
+        )
 
     @property
     def current_option(self):
@@ -213,12 +213,12 @@ class SolarModeSelect(
 
     @property
     def device_info(self) -> DeviceInfo | None:
-        return {
-            "identifiers": {(DOMAIN, "HCHLOR")},
-            "name": "HCHLOR",
-            "model": "Halo Chlor",
-            "manufacturer": "Astral Pool",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, "HCHLOR")},
+            name="HCHLOR",
+            model="Halo Chlor",
+            manufacturer="Astral Pool",
+        )
 
     @property
     def current_option(self):
@@ -270,12 +270,12 @@ class LightingModeSelect(
 
     @property
     def device_info(self) -> DeviceInfo | None:
-        return {
-            "identifiers": {(DOMAIN, "HCHLOR")},
-            "name": "HCHLOR",
-            "model": "Halo Chlor",
-            "manufacturer": "Astral Pool",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, "HCHLOR")},
+            name="HCHLOR",
+            model="Halo Chlor",
+            manufacturer="Astral Pool",
+        )
 
     @property
     def current_option(self):
